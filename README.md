@@ -1,92 +1,51 @@
-## AWS Threat Detection SOC Lab
+# AWS Threat Detection SOC Lab
 
-### Overview
-
-This repo contains a small, cost-safe AWS + Splunk lab for learning cloud threat detection. Follow the quick-start flow below to bring Splunk online, prep it for AWS logs, and keep moving toward the Terraform + ingestion phases.
-
-### Why This Lab Exists
-
-The goal is to give students and new analysts a realistic, hands-on way to explore AWS threat detection without large bills. You get to practice building detections, simulating attacks, and keeping costs predictable while learning how SOC teams operate in the cloud.
+Hands-on lab for AWS threat detection with Splunk: run Splunk locally, stand up AWS logging (CloudTrail, Config, VPC Flow Logs) with one script, and practice detection. **Build** brings the environment up; **destroy** tears it down.
 
 ---
 
-## Quick Start
+## What you need
 
-### Step 1. Prerequisites
-
-- Docker Desktop (running)
-- Python 3.10+ (`python --version`)
-- `pip` installed
-
-Install the Splunk Python SDK:
-
-```bash
-pip install splunk-sdk
-```
-
-### Step 2. Start Splunk in Docker
-
-From the `soc` folder:
-
-```bash
-cd soc
-docker compose up -d
-```
-
-Notes:
-
-- First startup can take 2-5 minutes.
-- Check status: `docker compose ps`
-- You should see `soc-splunk` with STATUS `Up`.
-
-Open Splunk Web: https://localhost:8000
-
-- Click through the certificate warning (Advanced -> Continue).
-- Default login (unless changed in `.env`):
-  - Username: `admin`
-  - Password: `ChangeMe123!`
-
-### Step 3. Create AWS Indexes (Python script)
-
-The script `soc/scripts/setup_splunk.py` creates these indexes in Splunk:
-
-- `aws_cloudtrail`
-- `aws_config`
-- `aws_guardduty`
-- `aws_vpcflow`
-
-Run it from `soc`:
-
-```bash
-cd soc
-python ./scripts/setup_splunk.py
-```
-
-- Enter the Splunk admin password when prompted.
-- Verify in Splunk: go to Settings -> Indexes and confirm the four indexes exist.
-
-### Step 4. Install Splunk Add-on for AWS (manual step)
-
-Download the add-on:
-
-- Visit https://splunkbase.splunk.com/app/1876/
-- Download the Splunk Add-on for AWS (`.spl` or `.tgz`).
-
-Install in Splunk:
-
-- In Splunk Web: Settings -> Manage Apps -> Install app from file.
-- Select the downloaded file and upload.
-- Restart Splunk when prompted.
-
-Confirm:
-
-- After restart, go to Settings -> Manage Apps.
-- You should see Splunk Add-on for AWS listed.
+| Requirement | Purpose |
+|-------------|---------|
+| Docker Desktop (running) | Splunk in a container |
+| Python 3.10+ | Splunk index setup script |
+| AWS account | Lab AWS resources |
+| PowerShell (Windows) | `build.ps1` / `destroy.ps1` |
 
 ---
 
-## Next Steps
+## Quick start
 
-- Use Terraform under `infra/` to build the minimal AWS environment.
-- Configure log ingestion so CloudTrail, Config, and VPC Flow logs land in the indexes above.
-- Iterate on detections (`detections/`) and attack simulations (`attacks/`) once data is flowing.
+**1. Start Splunk** — `cd soc` → `docker compose up -d` → open https://localhost:8000 (login: `admin` / `ChangeMe123!`). Allow 2–5 min on first start.
+
+**2. Create indexes** — From `soc`: `pip install splunk-sdk` then `python ./scripts/setup_splunk.py`. Use your Splunk password; confirm indexes `aws_cloudtrail`, `aws_config`, `aws_vpcflow` in **Settings → Indexes**.
+
+**3. Install Splunk Add-on for AWS** — In Splunk: **Apps → Manage Apps → Install app from file** (use the `.tgz` from [soc/add-on/README.md](soc/add-on/README.md)) → restart when prompted.
+
+**4. Create AWS environment** — `cd infra` → `.\build.ps1`. Enter AWS credentials, type **yes** to apply. Copy the **bucket names** and **Splunk user credentials** from the output for the Add-on. See [infra/README.md](infra/README.md) for details.
+
+---
+
+## Shutting down
+
+From `infra`: run `.\destroy.ps1`, enter credentials if prompted, type **yes** to confirm. The script empties S3 and removes all resources.
+
+---
+
+## After setup
+
+- **Add-on:** Add your AWS account (key/secret from build output) and S3 inputs for each bucket so data flows into the indexes.
+- **Practice:** Use `detections/` and `attacks/` once data is flowing.
+
+---
+
+## Project layout
+
+| Path | Purpose |
+|------|---------|
+| `infra/` | AWS resources (Terraform). Use `build.ps1` / `destroy.ps1` or run Terraform directly. |
+| `soc/` | Splunk (Docker), add-on drop folder, index setup. |
+| `scripts/` | Splunk setup (e.g. index creation). |
+
+Advanced users can run Terraform from `infra/` (`terraform plan` / `apply` / `destroy`). See [infra/README.md](infra/README.md) for options (region, project name).

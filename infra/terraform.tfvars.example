@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars to change region or project name. Optional.
+
+aws_region   = "us-east-1"
+project_name = "soc-lab"

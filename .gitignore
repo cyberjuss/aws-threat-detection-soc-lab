@@ -21,15 +21,19 @@ env/
 .terraform/
 *.tfstate
 *.tfstate.*
+tfplan
 crash.log
 override.tf
 override.tf.json
+infra/terraform.tfvars
 
 # Splunk / Docker data
 soc/var/
 soc/volumes/
 soc/log/
 soc/data/
+# Add-on .tgz from Splunkbase (do not commit)
+soc/add-on/*.tgz
 
 # VS Code / JetBrains
 .vscode/
