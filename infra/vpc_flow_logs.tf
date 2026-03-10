@@ -29,7 +29,7 @@ data "aws_vpc" "default" {
 resource "aws_flow_log" "main" {
   count = var.enable_vpc_flow_logs ? 1 : 0
 
-  log_destination     = aws_s3_bucket.vpc_flow_logs[0].arn
+  log_destination      = aws_s3_bucket.vpc_flow_logs[0].arn
   log_destination_type = "s3"
   traffic_type         = "ALL"
   vpc_id               = data.aws_vpc.default[0].id
