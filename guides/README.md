@@ -16,8 +16,6 @@ This folder holds the **full flow** and **reference** material for the AWS Threa
 | 6 | [Red team strategies for adversary simulation](step-by-step.md#6-red-team-strategies-for-adversary-simulation) | Lab-safe adversary simulation to validate detections. |
 | 7 | [Detections and corporate dashboard](step-by-step.md#7-detections-to-build-corporate-dashboard) | Example searches and dashboard for threat visibility. |
 
-**Reference:** [aws-data-and-splunk-ingestion.md](aws-data-and-splunk-ingestion.md) — build output, log sources, S3 vs SQS.
-
 ---
 
 ## Quick reference
@@ -25,7 +23,7 @@ This folder holds the **full flow** and **reference** material for the AWS Threa
 | Topic | Where |
 |-------|--------|
 | AWS keys / stop repeated prompts | [step-by-step.md — Credentials](step-by-step.md#credentials) |
-| SQS `AccessDenied` / plain S3 only | [aws-data-and-splunk-ingestion.md — SQS vs plain S3](aws-data-and-splunk-ingestion.md#4-sqs-based-s3-vs-plain-s3) |
+| SQS `AccessDenied` / plain S3 only | [step-by-step.md — Step 5 § Plain S3 vs SQS](step-by-step.md#plain-s3-vs-sqs) |
 | Teardown | `infra` → `.\destroy.ps1` |
 
 ---

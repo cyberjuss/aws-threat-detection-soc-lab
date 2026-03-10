@@ -106,7 +106,7 @@ Build output prints bucket names and access keys—use those only in the add-on,
 
 6. **Configure the add-on** with the printed bucket names and `soc-lab-splunk-addon` keys—**Configuration → AWS Account** and **Inputs** (one S3 input per bucket).
 
-End-to-end walkthrough: [guides/step-by-step.md](guides/step-by-step.md). S3 vs SQS and build output reference: [guides/aws-data-and-splunk-ingestion.md](guides/aws-data-and-splunk-ingestion.md).
+End-to-end walkthrough: [guides/step-by-step.md](guides/step-by-step.md).
 
 ---
 
@@ -137,7 +137,7 @@ Confirm with `yes`. Splunk can keep running locally; only AWS is torn down. Adva
 
 - **Credentials**: Don’t commit access keys; use the IAM user only in the Splunk add-on UI.
 - **SSH / network**: This lab is for learning; tighten security groups and access if you extend it toward production patterns.
-- **SQS**: If the add-on UI shows SQS `AccessDenied`, use plain S3 inputs—the lab user is S3-only by design (see [guides/aws-data-and-splunk-ingestion.md](guides/aws-data-and-splunk-ingestion.md)).
+- **SQS**: If the add-on UI shows SQS `AccessDenied`, use plain S3 inputs—the lab user is S3-only by design (see [guides/step-by-step.md § Step 5](guides/step-by-step.md#plain-s3-vs-sqs)).
 
 ---
 
@@ -154,4 +154,4 @@ Improvements and fixes welcome via issues or pull requests.
 | `infra/` | Terraform; `build.ps1` / `destroy.ps1` |
 | `soc/` | Docker Splunk, add-on `.tgz` folder |
 | `scripts/` | Index creation |
-| `guides/` | Step-by-step + ingestion reference |
+| `guides/` | Step-by-step (Steps 1–7) |

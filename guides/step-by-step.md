@@ -16,7 +16,6 @@ This guide takes you from nothing running through **AWS logs in Splunk**, **adve
 | 6 | Run lab-safe red team simulation to generate events. |
 | 7 | Build detections and a corporate dashboard. |
 
-Reference: [aws-data-and-splunk-ingestion.md](aws-data-and-splunk-ingestion.md).
 
 ---
 
@@ -118,6 +117,19 @@ Direct Terraform use: [infra/README.md](../infra/README.md).
 
 Connect the add-on to your buckets so Splunk pulls events from S3.
 
+### Build output to use
+
+From Step 4, capture:
+
+| Output | Use in add-on |
+|--------|----------------|
+| cloudtrail bucket name | CloudTrail S3 input |
+| config bucket name | Config S3 input |
+| vpc_flow_logs bucket name | VPC Flow S3 input |
+| splunk IAM access key ID / secret | AWS Account configuration |
+
+### Configure inputs
+
 1. Add-on **Configuration → AWS Account** — enter the Splunk IAM keys from Step 4.  
 2. **Inputs → Create New Input** — create three S3 inputs:
 
@@ -127,9 +139,24 @@ Connect the add-on to your buckets so Splunk pulls events from S3.
 | Config | config bucket | `aws_config` |
 | VPC Flow Logs | vpcflow bucket | `aws_vpcflow` |
 
-Use **plain S3** only—do not use SQS-based S3 inputs. See [aws-data-and-splunk-ingestion.md §4](aws-data-and-splunk-ingestion.md#4-sqs-based-s3-vs-plain-s3).
+Use **plain S3** only—do not use SQS-based S3 inputs.
 
-**Verify:**
+### Plain S3 vs SQS-based S3 {#plain-s3-vs-sqs}
+
+| Pattern | Behavior | This lab |
+|---------|----------|----------|
+| **Plain S3** | Splunk lists and reads objects in the bucket. | **Use this.** |
+| **SQS-based S3** | S3 events go to a queue; Splunk consumes the queue. | Do not use. |
+
+The IAM user `soc-lab-splunk-addon` is **S3-only** by design (`s3:GetObject`, `s3:ListBucket` on the three buckets). SQS paths require `sqs:ListQueues`, `sqs:ReceiveMessage`, etc. If the add-on UI probes SQS, you may see `AccessDenied`—that is expected. **Choose plain S3 inputs only**; you can ignore SQS errors if you are not using SQS-based inputs.
+
+### What each source writes
+
+- **CloudTrail** — Management API activity. Trail delivers JSON into the CloudTrail bucket.
+- **AWS Config** — Configuration snapshots and changes into the Config bucket via the delivery channel.
+- **VPC Flow Logs** — Network flow metadata (accept/reject, src/dst) into the VPC Flow bucket. Delivery is asynchronous; allow time after first traffic.
+
+### Verify
 
 ```
 index=aws_cloudtrail earliest=-30m
@@ -222,4 +249,4 @@ Confirm with `yes`. Splunk can remain running; only AWS resources are removed.
 | Issue | Action |
 |-------|--------|
 | Script blocked by policy | `powershell -ExecutionPolicy Bypass -File .\build.ps1` |
-| SQS errors in add-on | [aws-data-and-splunk-ingestion.md §4](aws-data-and-splunk-ingestion.md#4-sqs-based-s3-vs-plain-s3) — use plain S3 inputs only. |
+| SQS errors in add-on | [Step 5 — Plain S3 vs SQS](#plain-s3-vs-sqs) — use plain S3 inputs only. |
