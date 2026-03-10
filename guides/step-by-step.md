@@ -32,7 +32,7 @@ If `build.ps1` keeps asking for keys, run `aws configure` once, then rerun build
 
 ## 1. 🐳 Using Docker to host Splunk
 
-Splunk runs locally in a container so you can search logs without a cloud-hosted Splunk instance.
+Splunk runs locally in a container so you can search logs without a cloud-hosted Splunk instance. Once it’s set up, you can also start/stop it from **Docker Desktop**.
 
 ```bash
 cd soc
