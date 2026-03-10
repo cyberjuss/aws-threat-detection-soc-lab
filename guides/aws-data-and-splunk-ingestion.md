@@ -1,6 +1,6 @@
 # AWS data sources and Splunk ingestion
 
-Reference for **build output**, **what each log source writes**, and **how to wire the Splunk Add-on** (plain S3 vs SQS). Full walkthrough order: [step-by-step.md](step-by-step.md).
+Reference for **build output**, **what each log source writes**, and **how to wire the Splunk Add-on** (plain S3 vs SQS). Full walkthrough: [step-by-step.md](step-by-step.md) (Steps 1–7).
 
 ---
 

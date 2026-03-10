@@ -1,27 +1,22 @@
 # Step-by-step deployment
 
-This guide takes you from nothing running to **AWS logs searchable in Splunk**. Skip any step you have already completed.
+This guide takes you from nothing running through **AWS logs in Splunk**, **adversary simulation**, and **corporate-style detections**. Skip any step you have already completed.
 
 ---
 
 ## Overview
 
-- **Splunk** runs in Docker on your machine; the UI is at localhost.
-- **build.ps1** creates AWS logging and three S3 buckets; IAM user `soc-lab-splunk-addon` can read only those buckets.
-- **Splunk Add-on for AWS** pulls from S3 into indexes `aws_cloudtrail`, `aws_config`, `aws_vpcflow`.
+| Step | What you do |
+|------|-------------|
+| 1 | Host Splunk in Docker. |
+| 2 | Create indexes for AWS data. |
+| 3 | Install Splunk Add-on for AWS. |
+| 4 | Use Terraform (via `build.ps1`) to create AWS logging. |
+| 5 | Configure add-on inputs and verify data ingestion. |
+| 6 | Run lab-safe red team simulation to generate events. |
+| 7 | Build detections and a corporate dashboard. |
 
-Deeper reference on sources and inputs: [aws-data-and-splunk-ingestion.md](aws-data-and-splunk-ingestion.md).
-
----
-
-## Terminology
-
-| Term | Meaning |
-|------|---------|
-| Index | Splunk storage for events; one per source in this lab. |
-| Add-on | Splunk app that reads AWS S3. |
-| build.ps1 | Creates buckets, trail, Config, VPC Flow Logs, Splunk IAM user. |
-| destroy.ps1 | Empties buckets and deletes lab AWS resources. |
+Reference: [aws-data-and-splunk-ingestion.md](aws-data-and-splunk-ingestion.md).
 
 ---
 
@@ -36,9 +31,9 @@ If `build.ps1` keeps asking for keys, run `aws configure` once, then rerun build
 
 ---
 
-## Deployment instructions
+## 1. Using Docker to host Splunk
 
-### 1. Splunk (Docker)
+Splunk runs locally in a container so you can search logs without a cloud-hosted Splunk instance.
 
 ```bash
 cd soc
@@ -49,30 +44,45 @@ Open **https://localhost:8000**. Default login is `admin` with password from `so
 
 ---
 
-### 2. Indexes
+## 2. Splunk setup for indexes
+
+Create the indexes the add-on will write to.
 
 ```bash
 pip install splunk-sdk
 python ./scripts/setup_splunk.py
 ```
 
-Use the Splunk admin password when prompted. Confirm under **Settings → Indexes**: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`.
+Use the Splunk admin password when prompted. Confirm under **Settings → Indexes** that `aws_cloudtrail`, `aws_config`, and `aws_vpcflow` exist.
 
 ---
 
-### 3. Splunk Add-on for AWS
+## 3. Installing the AWS add-on
 
-Splunkbase “Already installed” applies to your Splunkbase account only—you still install the `.tgz` into your local Splunk.
+The Splunk Add-on for AWS reads from S3 buckets. Splunkbase “Already installed” applies to your account only—you still install the `.tgz` into your Splunk instance.
 
 1. Download: https://splunkbase.splunk.com/app/1876/  
 2. Optional: save the `.tgz` under `soc/add-on/`  
 3. In Splunk: **Apps → Manage Apps → Install app from file** → upload → restart  
 
-Inputs are configured after AWS build (Step 5). Field-level detail: [aws-data-and-splunk-ingestion.md](aws-data-and-splunk-ingestion.md).
+Inputs are configured after the AWS build (Step 5).
 
 ---
 
-### 4. AWS (build)
+## 4. Terraform basics and usage to build infra in AWS
+
+Terraform provisions AWS resources as code. You define **what** you want (buckets, trail, Config, VPC Flow Logs, IAM user); Terraform figures out **how** to create it.
+
+**Key concepts:**
+
+| Command | Purpose |
+|---------|---------|
+| `terraform init` | Download providers and prepare state. |
+| `terraform plan` | Show what would change without applying. |
+| `terraform apply` | Create or update resources. |
+| `terraform destroy` | Remove all resources. |
+
+**This lab:** `build.ps1` runs `init` and `apply` for you. It installs AWS CLI and Terraform if missing and prompts for credentials unless `aws configure` is set.
 
 ```powershell
 cd infra
@@ -86,7 +96,7 @@ Use your IAM user keys if prompted. Confirm with `yes`.
 - Three bucket names (`soc-lab-cloudtrail-…`, `soc-lab-config-…`, `soc-lab-vpcflow-…`)  
 - `soc-lab-splunk-addon` access key ID and secret (add-on only; secret is shown once)
 
-#### Credentials {#credentials}
+### Credentials {#credentials}
 
 ```powershell
 aws configure
@@ -100,12 +110,16 @@ If the script is blocked:
 powershell -ExecutionPolicy Bypass -File .\build.ps1
 ```
 
+Direct Terraform use: [infra/README.md](../infra/README.md).
+
 ---
 
-### 5. Add-on inputs
+## 5. Data ingestion in Splunk
 
-1. Add-on **Configuration → AWS Account** using the Splunk IAM keys from Step 4.  
-2. **Inputs → Create New Input** (three times):
+Connect the add-on to your buckets so Splunk pulls events from S3.
+
+1. Add-on **Configuration → AWS Account** — enter the Splunk IAM keys from Step 4.  
+2. **Inputs → Create New Input** — create three S3 inputs:
 
 | Input type | Bucket (from build output) | Index |
 |------------|---------------------------|--------|
@@ -113,13 +127,9 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
 | Config | config bucket | `aws_config` |
 | VPC Flow Logs | vpcflow bucket | `aws_vpcflow` |
 
-Use **plain S3** only—do not use SQS-based S3 inputs for this lab.
+Use **plain S3** only—do not use SQS-based S3 inputs. See [aws-data-and-splunk-ingestion.md §4](aws-data-and-splunk-ingestion.md#4-sqs-based-s3-vs-plain-s3).
 
----
-
-### 6. Verify
-
-In Search:
+**Verify:**
 
 ```
 index=aws_cloudtrail earliest=-30m
@@ -127,7 +137,64 @@ index=aws_config earliest=-30m
 index=aws_vpcflow earliest=-30m
 ```
 
-Empty results at first are normal; AWS writes and add-on polling are asynchronous—wait and retry.
+Empty results at first are normal; AWS and the add-on poll asynchronously—wait and retry.
+
+---
+
+## 6. Red team strategies for adversary simulation
+
+Once data flows, you can **simulate adversary activity** in your AWS account to generate events and validate that your detections fire. The goal is purple-team style: safe, controlled actions that mirror real threats.
+
+**Lab-safe approach:**
+
+- Use a **dedicated lab account** or isolated resources.  
+- Do not target production workloads or shared assets.  
+- Actions should be **detectable** (CloudTrail, Config, VPC Flow) but **reversible**.
+
+**Example scenarios to simulate:**
+
+| Scenario | What to do | What gets logged |
+|----------|------------|------------------|
+| IAM privilege escalation | Create a new IAM user or attach a policy; then remove. | CloudTrail `CreateUser`, `AttachUserPolicy`, etc. |
+| Console access from new region | Log in from a different region or IP (VPN/cloud shell). | CloudTrail `ConsoleLogin`. |
+| S3 bucket exposure | Change bucket ACL or policy to public; revert. | CloudTrail + Config snapshot. |
+| Unusual API volume | Run `Describe*` calls in a loop (e.g. via AWS CLI). | CloudTrail API events. |
+| Security group changes | Open a port, add a rule; revert. | CloudTrail + Config. |
+
+**Tools and frameworks:**
+
+- [MITRE ATT&CK for Cloud (AWS)](https://attack.mitre.org/matrices/enterprise/cloud/aws/) — map TTPs to CloudTrail event names.  
+- [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) — atomic tests for many platforms; adapt cloud tests for your lab.  
+
+After running simulations, search Splunk to confirm events appear and your detections (Step 7) fire.
+
+---
+
+## 7. Detections to build corporate dashboard
+
+Use Splunk to build **detections** and a **corporate-style dashboard** that give visibility over the lab’s AWS activity.
+
+**Example searches (detections):**
+
+| Detection | SPL (concept) |
+|-----------|---------------|
+| Failed console login | `index=aws_cloudtrail eventName=ConsoleLogin errorMessage=*` |
+| IAM user created | `index=aws_cloudtrail eventName=CreateUser` |
+| Security group modified | `index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress OR RevokeSecurityGroupIngress` |
+| S3 bucket policy changed | `index=aws_cloudtrail eventName=PutBucketPolicy` |
+| Config non-compliant changes | `index=aws_config complianceType=NON_COMPLIANT` |
+| Unusual API caller | `index=aws_cloudtrail eventName=* \| stats count by userIdentity.userName \| where count > 100` |
+
+**Building the dashboard:**
+
+1. **Splunk → Dashboards → Create New Dashboard**  
+2. Add panels for:  
+   - **Alerts by severity** — count of high-impact events (e.g. IAM, policy changes).  
+   - **Top event names** — `stats count by eventName` for CloudTrail.  
+   - **Timeline** — events over time.  
+   - **Failed logins** — from the failed ConsoleLogin search above.  
+
+Use saved searches and convert them to dashboard panels. Style it like a corporate SOC dashboard: key metrics upfront, drill-down into raw events.
 
 ---
 
@@ -145,7 +212,8 @@ Confirm with `yes`. Splunk can remain running; only AWS resources are removed.
 ## Notes on security
 
 - Keep `soc-lab-splunk-addon` keys out of repos; use only in the add-on UI.  
-- Restrict execution policy bypass to trusted scripts only.
+- Restrict execution policy bypass to trusted scripts only.  
+- Run adversary simulation only in lab accounts.
 
 ---
 
