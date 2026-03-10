@@ -1,4 +1,4 @@
-# AWS Threat Detection SOC Lab - Local Splunk
+# AWS Threat Detection Soc Lab - Local Splunk
 # From this folder: docker compose up -d
 
 services:

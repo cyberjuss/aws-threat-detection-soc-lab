@@ -2,7 +2,7 @@
 
 ## Security & Threat Detection
 
-I work on threat detection, security monitoring, and cloud security. I built the [AWS Threat Detection SOC Lab](https://github.com/cyberjuss/AWS-Threat-Detection-SOC-LAB) to combine Splunk, AWS (CloudTrail, Config, VPC Flow Logs), and detection practice in one place.
+I work on threat detection, security monitoring, and cloud security. I built the [AWS Threat Detection Soc Lab](https://github.com/cyberjuss/AWS-Threat-Detection-Soc-Lab) to combine Splunk, AWS (CloudTrail, Config, VPC Flow Logs), and detection practice in one place.
 
 - 🌍 Add your location
 - ✉️ Contact: add your email
@@ -16,7 +16,7 @@ Splunk · AWS · Terraform · PowerShell · Python · Docker
 
 ### Featured repo
 
-[**AWS Threat Detection SOC Lab**](https://github.com/cyberjuss/AWS-Threat-Detection-SOC-LAB) — Hands-on lab for AWS threat detection with Splunk. Build/destroy scripts, CloudTrail, Config, VPC Flow Logs.
+[**AWS Threat Detection Soc Lab**](https://github.com/cyberjuss/AWS-Threat-Detection-Soc-Lab) — Hands-on lab for AWS threat detection with Splunk. Build/destroy scripts, CloudTrail, Config, VPC Flow Logs.
 
 ### Connect
 

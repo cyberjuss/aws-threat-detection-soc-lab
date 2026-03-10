@@ -21,9 +21,9 @@ This folder (**cyberjuss**) has your **profile README** in the style of [tayonte
 
 If your lab repo will live under the **cyberjuss** account:
 
-- Create (or rename) the repo to **AWS-Threat-Detection-SOC-LAB** under **cyberjuss**.
+- Create (or rename) the repo to **AWS-Threat-Detection-Soc-Lab** (display title can be **AWS Threat Detection Soc Lab**) under **cyberjuss**.
 - In your local lab folder, set the remote (or add a second remote):
   ```bash
-  git remote set-url origin https://github.com/cyberjuss/AWS-Threat-Detection-SOC-LAB.git
+  git remote set-url origin https://github.com/cyberjuss/AWS-Threat-Detection-Soc-Lab.git
   ```
-- The profile README already links to `https://github.com/cyberjuss/AWS-Threat-Detection-SOC-LAB`.
+- The profile README already links to `https://github.com/cyberjuss/AWS-Threat-Detection-Soc-Lab`.
