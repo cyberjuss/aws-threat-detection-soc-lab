@@ -1,10 +1,10 @@
-# Step-by-step deployment
+# 🧭 Step-by-step deployment
 
 This guide takes you from nothing running through **AWS logs in Splunk**, **adversary simulation**, and **corporate-style detections**. Skip any step you have already completed.
 
 ---
 
-## Overview
+## ✨ Overview
 
 | Step | What you do |
 |------|-------------|
@@ -19,7 +19,7 @@ This guide takes you from nothing running through **AWS logs in Splunk**, **adve
 
 ---
 
-## Requirements
+## ✅ Requirements
 
 - Docker Desktop  
 - Python 3.10+  
@@ -30,7 +30,7 @@ If `build.ps1` keeps asking for keys, run `aws configure` once, then rerun build
 
 ---
 
-## 1. Using Docker to host Splunk
+## 1. 🐳 Using Docker to host Splunk
 
 Splunk runs locally in a container so you can search logs without a cloud-hosted Splunk instance.
 
@@ -43,7 +43,7 @@ Open **https://localhost:8000**. Default login is `admin` with password from `so
 
 ---
 
-## 2. Splunk setup for indexes
+## 2. 📚 Splunk setup for indexes
 
 Create the indexes the add-on will write to.
 
@@ -56,7 +56,7 @@ Use the Splunk admin password when prompted. Confirm under **Settings → Indexe
 
 ---
 
-## 3. Installing the AWS add-on
+## 3. 📦 Installing the AWS add-on
 
 The Splunk Add-on for AWS reads from S3 buckets. Splunkbase “Already installed” applies to your account only—you still install the `.tgz` into your Splunk instance.
 
@@ -68,7 +68,7 @@ Inputs are configured after the AWS build (Step 5).
 
 ---
 
-## 4. Terraform basics and usage to build infra in AWS
+## 4. ☁️ Terraform basics and usage to build infra in AWS
 
 Terraform provisions AWS resources as code. You define **what** you want (buckets, trail, Config, VPC Flow Logs, IAM user); Terraform figures out **how** to create it.
 
@@ -113,9 +113,11 @@ Direct Terraform use: [infra/README.md](../infra/README.md).
 
 ---
 
-## 5. Data ingestion in Splunk
+## 5. 🔄 Data ingestion in Splunk
 
 Connect the add-on to your buckets so Splunk pulls events from S3.
+
+> **Less is more:** keep inputs **plain S3**. SQS-based S3 is out of scope for this lab.
 
 ### Build output to use
 
@@ -156,7 +158,7 @@ The IAM user `soc-lab-splunk-addon` is **S3-only** by design (`s3:GetObject`, `s
 - **AWS Config** — Configuration snapshots and changes into the Config bucket via the delivery channel.
 - **VPC Flow Logs** — Network flow metadata (accept/reject, src/dst) into the VPC Flow bucket. Delivery is asynchronous; allow time after first traffic.
 
-### Verify
+### ✅ Verify
 
 ```
 index=aws_cloudtrail earliest=-30m
@@ -168,7 +170,7 @@ Empty results at first are normal; AWS and the add-on poll asynchronously—wait
 
 ---
 
-## 6. Red team strategies for adversary simulation
+## 6. 🎭 Red team strategies for adversary simulation
 
 Once data flows, you can **simulate adversary activity** in your AWS account to generate events and validate that your detections fire. The goal is purple-team style: safe, controlled actions that mirror real threats.
 
@@ -197,7 +199,7 @@ After running simulations, search Splunk to confirm events appear and your detec
 
 ---
 
-## 7. Detections to build corporate dashboard
+## 7. 📊 Detections to build corporate dashboard
 
 Use Splunk to build **detections** and a **corporate-style dashboard** that give visibility over the lab’s AWS activity.
 
@@ -225,7 +227,7 @@ Use saved searches and convert them to dashboard panels. Style it like a corpora
 
 ---
 
-## Cleanup
+## 🧹 Cleanup
 
 ```powershell
 cd infra
@@ -236,7 +238,7 @@ Confirm with `yes`. Splunk can remain running; only AWS resources are removed.
 
 ---
 
-## Notes on security
+## 🔐 Notes on security
 
 - Keep `soc-lab-splunk-addon` keys out of repos; use only in the add-on UI.  
 - Restrict execution policy bypass to trusted scripts only.  
@@ -244,7 +246,7 @@ Confirm with `yes`. Splunk can remain running; only AWS resources are removed.
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 | Issue | Action |
 |-------|--------|

@@ -1,4 +1,4 @@
-# AWS Threat Detection Soc Lab
+# 🛡️ AWS Threat Detection Soc Lab
 
 This project is a Terraform-and-script-driven lab for standing up **AWS logging** (CloudTrail, Config, VPC Flow Logs) into **S3** and ingesting that data into **Splunk** running locally in Docker. It gives you a repeatable, Infrastructure-as-Code path to practice threat detection and search without hand-wiring every bucket and input.
 
@@ -6,7 +6,7 @@ Once resources are deployed, use the [Splunk Add-on for AWS](https://splunkbase.
 
 ---
 
-## Overview
+## ✨ Overview
 
 The lab lets you:
 
@@ -15,25 +15,23 @@ The lab lets you:
 - **Tear everything down** (`destroy.ps1`) so you don’t leave buckets or trails running.
 - Practice **search and detection** over `aws_cloudtrail`, `aws_config`, and `aws_vpcflow` once data flows.
 
-The layout is modular: local stack (Splunk + add-on) is separate from AWS (Terraform under `infra/`), similar in spirit to how [kali-soc-terraform](https://github.com/tayontech/kali-soc-terraform) breaks out VPC, IAM, EC2, etc.—here the “modules” are Splunk, indexes, add-on, and AWS logging.
-
 ---
 
-## Components Overview
+## 🧩 Components Overview
 
-### 1. Splunk (Docker)
+### 1. 🐳 Splunk (Docker)
 
 Splunk runs in a container defined under `soc/`. First start can take a few minutes. Web UI and credentials are set in `soc/` (default admin password overridable via `soc/.env`).
 
-### 2. Indexes
+### 2. 📚 Indexes
 
 A small Python script (`scripts/setup_splunk.py`) creates the indexes the add-on expects: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`. Run it after Splunk is up and reachable.
 
-### 3. Splunk Add-on for AWS
+### 3. 📦 Splunk Add-on for AWS
 
 Install from [Splunkbase](https://splunkbase.splunk.com/app/1876/) (or keep the `.tgz` under [soc/add-on/](soc/add-on/README.md)). Configure **AWS Account** and **S3 inputs** per bucket—use **plain S3** inputs only for this lab; the IAM user has S3 read, not SQS.
 
-### 4. AWS infrastructure (`infra/`)
+### 4. ☁️ AWS infrastructure (`infra/`)
 
 Terraform provisions:
 
@@ -47,7 +45,7 @@ Terraform provisions:
 
 ---
 
-## What gets created (AWS)
+## 🏗️ What gets created (AWS)
 
 | Resource | Purpose |
 |----------|---------|
@@ -61,7 +59,7 @@ Build output prints bucket names and access keys—use those only in the add-on,
 
 ---
 
-## Requirements
+## ✅ Requirements
 
 - **Docker Desktop** — Splunk container.
 - **Python 3.10+** and `splunk-sdk` — index setup script.
@@ -71,7 +69,7 @@ Build output prints bucket names and access keys—use those only in the add-on,
 
 ---
 
-## Deployment Instructions
+## 🚀 Deployment Instructions
 
 1. **Clone the repository** (or open this folder) and start Splunk:
 
@@ -110,7 +108,7 @@ End-to-end walkthrough: [guides/step-by-step.md](guides/step-by-step.md).
 
 ---
 
-## Searching once data is flowing
+## 🔎 Searching once data is flowing
 
 ```
 index=aws_cloudtrail earliest=-1h
@@ -120,7 +118,7 @@ index=aws_vpcflow earliest=-1h
 
 ---
 
-## Cleanup
+## 🧹 Cleanup
 
 To destroy AWS resources and avoid ongoing cost:
 
@@ -133,7 +131,7 @@ Confirm with `yes`. Splunk can keep running locally; only AWS is torn down. Adva
 
 ---
 
-## Notes on security
+## 🔐 Notes on security
 
 - **Credentials**: Don’t commit access keys; use the IAM user only in the Splunk add-on UI.
 - **SSH / network**: This lab is for learning; tighten security groups and access if you extend it toward production patterns.
@@ -141,13 +139,13 @@ Confirm with `yes`. Splunk can keep running locally; only AWS is torn down. Adva
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Improvements and fixes welcome via issues or pull requests.
 
 ---
 
-## Project layout
+## 🗂️ Project layout
 
 | Path | Purpose |
 |------|---------|

@@ -1,10 +1,10 @@
-# Guides
+# 📚 Guides
 
 This folder holds the **full flow** and **reference** material for the AWS Threat Detection Soc Lab. The [main README](../README.md) stays high-level; these guides walk through every step from Splunk up through detection practice and dashboards.
 
 ---
 
-## Overview
+## ✨ Overview
 
 | Step | Topic | Purpose |
 |------|-------|---------|
@@ -18,7 +18,7 @@ This folder holds the **full flow** and **reference** material for the AWS Threa
 
 ---
 
-## Quick reference
+## ⚡ Quick reference
 
 | Topic | Where |
 |-------|--------|
@@ -28,7 +28,7 @@ This folder holds the **full flow** and **reference** material for the AWS Threa
 
 ---
 
-## Repository paths
+## 🗂️ Repository paths
 
 | Path | Contents |
 |------|----------|
