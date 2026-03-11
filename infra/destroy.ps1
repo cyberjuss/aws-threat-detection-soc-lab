@@ -53,6 +53,15 @@ if (-not (Test-AwsCredentialsSet)) {
     }
     $env:AWS_ACCESS_KEY_ID = $accessKey.Trim()
     Write-Host "[AWS] Credentials set for this run." -ForegroundColor Green
+} else {
+    # Destroy must run with build credentials (account admin / Terraform user), not the Stratus Red Team user.
+    try {
+        $caller = aws sts get-caller-identity --output json 2>$null | ConvertFrom-Json
+        $arn = $caller.Arn
+        if ($arn -match 'soc-lab-stratus') {
+            Write-Error "Destroy is running as the Stratus Red Team user (soc-lab-stratus), which cannot empty S3 or run Terraform. Use the same credentials as for build.ps1. In a new terminal run: cd infra; .\destroy.ps1  OR  unset AWS_PROFILE and set the profile you used for build, then run destroy again."
+        }
+    } catch {}
 }
 
 # Get bucket names from state (state pull = full JSON; most reliable)
