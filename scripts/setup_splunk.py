@@ -1,7 +1,5 @@
-# setup_splunk.py
-# Creates the Splunk indexes needed for AWS logs. An index is where Splunk stores data;
-# we use one per source (CloudTrail, Config, VPC Flow) so searches and retention are clear.
-# Run from soc:  python ./scripts/setup_splunk.py
+# Create AWS indexes in Splunk (aws_cloudtrail, aws_config, aws_vpcflow).
+# Usage: python setup_splunk.py [--host localhost] [--port 8089] [--username admin]
 
 import argparse
 import getpass

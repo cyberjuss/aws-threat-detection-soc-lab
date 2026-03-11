@@ -10,19 +10,15 @@ Use the **Stratus Red Team** IAM user (`soc-lab-stratus`) to run attack techniqu
    .\build.ps1
    ```
 
-2. **Install Stratus Red Team CLI**  
-   [stratus-red-team.cloud](https://stratus-red-team.cloud/)
-
-3. **Create AWS profile and set this session** (run from this folder):
+2. **Configure Stratus** (run from this folder). Installs Go via winget if needed, then `go install` for Stratus CLI. Creates/updates the `stratus-lab` AWS profile from `.env.stratus` and sets this session:
    ```powershell
    cd attacks
-   .\set-stratus-profile.ps1
+   .\configure-stratus.ps1
    ```
-   This adds/updates the `stratus-lab` profile in `~/.aws/credentials` and sets `AWS_PROFILE` for the current window.
 
 ## Run attacks
 
-In the **same** PowerShell window after the script:
+In the **same** PowerShell window after running the script:
 
 ```powershell
 stratus list --platform aws
@@ -31,4 +27,4 @@ stratus detonate <technique-id> --cleanup
 
 For **list**, **detonate**, **warmup**, **cleanup**, and **status**, see the [Stratus usage guide](https://stratus-red-team.cloud/user-guide/usage/).
 
-**New terminal?** Run `.\set-stratus-profile.ps1` again, or `$env:AWS_PROFILE = "stratus-lab"`.
+**New terminal?** Run `.\configure-stratus.ps1` again, or `$env:AWS_PROFILE = "stratus-lab"`.

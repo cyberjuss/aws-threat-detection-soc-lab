@@ -14,11 +14,9 @@ The lab lets you:
 - **Create AWS resources in one step** (`build.ps1`): three S3 buckets, CloudTrail, Config, VPC Flow Logs, and a least-privilege IAM user for Splunk.
 - **Tear everything down** (`destroy.ps1`) so you don’t leave buckets or trails running.
 - Practice **search and detection** over `aws_cloudtrail`, `aws_config`, and `aws_vpcflow` once data flows.
-<img width="1330" height="778" alt="image" src="https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e" />
-
 
 <p align="center">
-  <img width="1330" height="778" alt="AWS Threat Detection SOC Lab architecture: AWS Cloud (CloudTrail, Config, VPC Flow → S3 → SQS) to Splunk (Docker)" src="https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e" />
+  <img width="1330" height="778" alt="Architecture: AWS (CloudTrail, Config, VPC Flow → S3 → SQS) to Splunk on Docker" src="https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e" />
 </p>
 
 ---
@@ -153,9 +151,10 @@ Improvements and fixes welcome via issues or pull requests.
 
 ## 🗂️ Project layout
 
-| Path | Purpose |
-|------|---------|
-| `infra/` | Terraform; `build.ps1` / `destroy.ps1` |
-| `soc/` | Docker Splunk, add-on `.tgz` folder |
-| `scripts/` | Index creation |
+| Path | Contents |
+|------|----------|
+| `infra/` | Terraform; `build.ps1`, `destroy.ps1` |
+| `soc/` | Splunk (Docker), add-on |
+| `scripts/` | `setup_splunk.py` — create indexes |
 | `guides/` | Step-by-step (Steps 1–7) |
+| `attacks/` | `configure-stratus.ps1` — Stratus CLI + AWS profile |
