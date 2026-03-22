@@ -1,26 +1,58 @@
 # 🛡️ AWS Threat Detection SOC Lab
 Imagine spinning up a cloud SOC lab where the infrastructure is already in place, so you can focus on what matters most such as adversary simulation, detection engineering, and real investigation practice. I built this Terraform-based project as a repeatable, cost-conscious AWS threat detection environment so others can learn by doing and focus on practical security outcomes, not just setup steps.
 
-## 🎯 Why this matters
+> Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
+
+## At a glance
+- Cloud telemetry: CloudTrail, AWS Config, VPC Flow Logs
+- Ingestion: S3 + SQS queue notifications into Splunk
+- Validation: Stratus Red Team attack simulation
+- Outcome: detection-ready data pipeline and repeatable SOC practice loop
+
+## Project snapshot
+| Field | Details |
+|------|---------|
+| Role | Security analyst / detection engineering learner |
+| Focus | AWS threat detection and cloud SOC workflow |
+| Stack | Terraform, AWS CloudTrail/Config/VPC Flow Logs, S3, SQS, Splunk, Stratus |
+| Outcome | Repeatable telemetry pipeline and validated detection scenarios |
+
+## Why this matters
 This lab simulates how a cloud SOC ingests AWS telemetry, maps attacker behavior to logs, builds practical detections in Splunk, and validates detection coverage with adversary emulation.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, and ingested into Splunk to validate detections.
 
 ![Architecture: AWS to S3 (optional SQS) to Splunk Docker](https://github.com/user-attachments/assets/c65afbe7-7817-4510-8017-30ffeb521446)
 
 ---
 
-## 📘 Overview
+## Table of contents
+- [Overview](#overview)
+- [Portfolio outcomes](#portfolio-outcomes)
+- [Components (repo map)](#components-repo-map)
+- [Prerequisites](#prerequisites)
+- [Quick start (end-to-end)](#quick-start-end-to-end)
+- [How ingestion works (data flow)](#how-ingestion-works-data-flow)
+- [Verify data in Splunk](#verify-data-in-splunk)
+- [Detection practice (starter searches)](#detection-practice-starter-searches)
+- [Troubleshooting](#troubleshooting)
+- [Cleanup](#cleanup)
+- [Notes on security](#notes-on-security)
+- [Repo layout](#repo-layout)
+
+---
+
+## Overview
 This repo is structured as a full SOC practice loop:
 1. Build cloud telemetry infrastructure with Terraform.
 2. Ingest logs into Splunk and normalize into dedicated indexes.
 3. Simulate attacker behavior with Stratus Red Team.
 4. Validate detections and investigations against real generated events.
 
-## 🏆 Portfolio outcomes
+## Portfolio outcomes
 | Outcome | What was delivered |
 |------|------|
 | Detection-ready data pipeline | CloudTrail, AWS Config, and VPC Flow Logs routed to S3 and ingested into Splunk |
@@ -29,20 +61,14 @@ This repo is structured as a full SOC practice loop:
 | Repeatable workflow | One-command build and teardown scripts for fast lab reset and iteration |
 | Analyst workflow practice | Search, triage, and dashboard building based on realistic AWS event data |
 
-## ✅ What you get (high level)
-1. AWS telemetry
-   - CloudTrail (management/API event trail) → S3
-   - AWS Config (config change history) → S3
-   - VPC Flow Logs (network telemetry) → S3
-2. Ingestion into Splunk
-   - Splunk runs locally via Docker (`soc/`)
-   - `scripts/setup_splunk.py` creates indexes: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`
-   - Splunk Add-on for AWS ingests logs from S3 (and optionally from SQS)
-3. Validation via red team activity
-   - Stratus Red Team generates controlled “known-bad” AWS actions
-   - Those actions land in CloudTrail and then in Splunk
+## Evidence checklist
+Use this list to quickly verify project outcomes:
+- Splunk indexes exist: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`
+- SQS-based inputs are configured and receiving events
+- Stratus detonation runs and corresponding events appear in Splunk
+- Starter detections return expected matches in CloudTrail-backed data
 
-## 🧩 Components (repo map)
+## Components (repo map)
 | Component | What it does | Where |
 |----------|--------------|------|
 | Splunk (Docker) | Local Splunk Enterprise for searching + dashboards | `soc/` |
@@ -51,14 +77,14 @@ This repo is structured as a full SOC practice loop:
 | AWS logging infra | CloudTrail + Config + VPC Flow Logs → S3 (+ optional SQS wiring) | `infra/` |
 | Stratus Red Team | Generates “known-bad” activity to validate detections | `attacks/` |
 
-## ⚙️ Prerequisites
+## Prerequisites
 - Docker Desktop
 - Python 3.10+
 - PowerShell (Windows) / a terminal to run scripts
 - An AWS account + permissions to create the lab resources
 - `aws configure` set up on your machine
 
-## 🚀 Quick start (end-to-end)
+## Quick start (end-to-end)
 Follow the more detailed walkthrough in [`guides/step-by-step.md`](guides/step-by-step.md). This is the fast version.
 
 ### 1) Start Splunk (Docker)
@@ -104,14 +130,16 @@ Then run a technique:
 stratus detonate <technique-id> --cleanup
 ```
 
-## 🔄 How ingestion works (data flow)
+For exercise ideas and dashboard steps, see [`guides/step-by-step.md`](guides/step-by-step.md) section 7.
+
+## How ingestion works (data flow)
 SQS-based S3 ingestion (project standard):
 1. CloudTrail / AWS Config / VPC Flow Logs write objects to S3
 2. S3 sends ObjectCreated notifications to SQS queues (provisioned by Terraform)
 3. Splunk Add-on polls SQS, reads messages, fetches referenced S3 objects
 4. Events are written to Splunk indexes (`aws_*`)
 
-## 🔎 Verify data in Splunk
+## Verify data in Splunk
 Start with:
 `index=aws_cloudtrail earliest=-1h`
 And repeat for:
@@ -120,38 +148,20 @@ And repeat for:
 
 If Splunk is empty, widen the time window (for example `earliest=-2h`) and wait a few minutes for AWS delivery + Splunk ingestion.
 
-## 🛡️ Detection practice (starter searches)
-These are good “first detections” tied to the telemetry your lab generates:
 
-- Failed console login: `index=aws_cloudtrail eventName=ConsoleLogin errorMessage=*`
-- IAM user created: `index=aws_cloudtrail eventName=CreateUser`
-- Security group changes: `index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress OR RevokeSecurityGroupIngress`
-
-For exercise ideas and dashboard steps, see [`guides/step-by-step.md`](guides/step-by-step.md) section 7.
-
-## 🧰 Troubleshooting
-Common issues and fixes:
-
-- Missing Splunk SDK (`splunklib.client` import error):
-  - `pip install splunk-sdk`
-- SQS / add-on errors:
-  - Use plain S3 inputs first (no SQS). Keep ingestion simple until data is flowing.
-- Destroy fails (for example `AccessDenied`):
-  - Run `infra/destroy.ps1` using the same credentials you used for `build.ps1` (not your Stratus profile).
-
-## 🧹 Cleanup
+## Cleanup
 Use build credentials (not Stratus):
 ```powershell
 cd infra
 .\destroy.ps1
 ```
 
-## 🔐 Notes on security
+## Notes on security
 - Don’t commit `.env*` files or access keys.
 - Treat the Splunk add-on IAM user (`soc-lab-splunk-addon`) as ingestion-only.
 - Treat the Stratus IAM user (`soc-lab-stratus`) as attack-simulation-only.
 
-## 🗂️ Repo layout
+## Repo layout
 | Path | What |
 |------|------|
 | `infra/` | `build.ps1`, `destroy.ps1`, Terraform |
