@@ -1,5 +1,5 @@
 # 🛡️ AWS Threat Detection SOC Lab
-Imagine spinning up a cloud SOC lab where the infrastructure is already handled for you, so you can jump straight into adversary simulation, detection building, and real investigation practice. This Terraform-based project gives you a repeatable, cost-conscious AWS threat detection environment that helps you focus on learning and outcomes instead of setup overhead.
+Imagine spinning up a cloud SOC lab where the infrastructure is already in place, so you can focus on what matters most such as adversary simulation, detection engineering, and real investigation practice. I built this Terraform-based project as a repeatable, cost-conscious AWS threat detection environment so others can learn by doing and focus on practical security outcomes, not just setup steps.
 
 ## 🎯 Why this matters
 This lab simulates how a cloud SOC ingests AWS telemetry, maps attacker behavior to logs, builds practical detections in Splunk, and validates detection coverage with adversary emulation.
@@ -28,12 +28,6 @@ This repo is structured as a full SOC practice loop:
 | Practical detections | Starter detections for failed logins, IAM user creation, and security group changes |
 | Repeatable workflow | One-command build and teardown scripts for fast lab reset and iteration |
 | Analyst workflow practice | Search, triage, and dashboard building based on realistic AWS event data |
-
-## 🧠 Lessons learned
-- Data quality and source mapping matter more than alert volume.
-- S3-only ingestion is the fastest stable path; SQS adds flexibility but more moving parts.
-- Detection logic improves faster when every test is tied to a known attack action and expected evidence.
-- Automating build/destroy makes cloud detection practice cheaper and more consistent.
 
 ## ✅ What you get (high level)
 1. AWS telemetry
@@ -111,14 +105,11 @@ stratus detonate <technique-id> --cleanup
 ```
 
 ## 🔄 How ingestion works (data flow)
-Primary (SQS-based S3):
+SQS-based S3 ingestion (project standard):
 1. CloudTrail / AWS Config / VPC Flow Logs write objects to S3
 2. S3 sends ObjectCreated notifications to SQS queues (provisioned by Terraform)
 3. Splunk Add-on polls SQS, reads messages, fetches referenced S3 objects
 4. Events are written to Splunk indexes (`aws_*`)
-
-Alternate (S3-only; not default here):
-- Splunk Add-on lists S3 and ingests new objects directly (no SQS)
 
 ## 🔎 Verify data in Splunk
 Start with:
