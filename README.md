@@ -3,7 +3,7 @@ Imagine spinning up a cloud SOC lab where the infrastructure is already in place
 
 > Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
 
-## At a glance
+## Quick project snapshot
 | Area | Details |
 |------|---------|
 | Cloud telemetry | CloudTrail, AWS Config, VPC Flow Logs |
@@ -30,12 +30,16 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 ---
 
 ## Table of contents
+- [Quick project snapshot](#quick-project-snapshot)
+- [Why this matters](#why-this-matters)
+- [Architecture](#architecture)
+- [How ingestion works (data flow)](#how-ingestion-works-data-flow)
 - [Overview](#overview)
 - [Portfolio outcomes](#portfolio-outcomes)
+- [Evidence checklist](#evidence-checklist)
 - [Components (repo map)](#components-repo-map)
 - [Prerequisites](#prerequisites)
 - [Quick start (end-to-end)](#quick-start-end-to-end)
-- [How ingestion works (data flow)](#how-ingestion-works-data-flow)
 - [Verify data in Splunk](#verify-data-in-splunk)
 - [Cleanup](#cleanup)
 - [Repo layout](#repo-layout)
