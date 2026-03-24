@@ -42,7 +42,7 @@ A full step-by-step walkthrough is in [`guides/step-by-step.md`](guides/step-by-
 - Docker Desktop
 - Python 3.10+
 - AWS account
-- `aws configure` set up,
+- `aws configure` set up
 - Bash terminal.
 
 ### 1. Start Splunk
