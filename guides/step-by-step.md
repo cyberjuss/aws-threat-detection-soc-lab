@@ -6,7 +6,11 @@ Skip steps you’ve already done. For more depth, see the project’s Medium blo
 
 ## Requirements
 
-Docker Desktop · Python 3.10+ · AWS account · Bash shell · `aws configure` (so build doesn’t keep prompting)
+- Docker Desktop
+- Python 3.10+
+- AWS account
+- Bash shell
+- AWS CLI configured (`aws configure`) to avoid repeated credential prompts
 
 ---
 
@@ -17,7 +21,7 @@ cd soc
 docker compose up -d
 ```
 
-Open https://localhost:8000 — login `admin`, password in `soc/.env` or compose default. Start/stop via Docker Desktop.
+Open `https://localhost:8000`, sign in as `admin`, and use the password in `soc/.env` (or the Docker Compose default).
 
 ---
 
@@ -35,7 +39,7 @@ Confirm **Settings → Indexes**: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`.
 ## 3. AWS add-on
 
 1. Download [Splunk Add-on for AWS](https://splunkbase.splunk.com/app/1876/)
-2. Splunk → **Apps → Manage Apps → Install app from file** → upload → restart
+2. In Splunk, go to **Apps > Manage Apps > Install app from file**, upload the package, then restart Splunk.
 
 Inputs come in Step 5.
 
@@ -74,7 +78,7 @@ Verify: `index=aws_cloudtrail earliest=-30m` (and `aws_config`, `aws_vpcflow`). 
 
 ## 6. Red team (Stratus)
 
-Use [attacks/README.md](attacks/README.md): `cd attacks` -> `source ./configure-stratus.sh` -> `stratus list --platform aws` and `stratus detonate <id> --cleanup`. Events show in CloudTrail -> Splunk.
+Use [attacks/README.md](attacks/README.md): `cd attacks`, run `source ./configure-stratus.sh`, then run `stratus list --platform aws` and `stratus detonate <id> --cleanup`. Events flow from CloudTrail to Splunk.
 
 ---
 

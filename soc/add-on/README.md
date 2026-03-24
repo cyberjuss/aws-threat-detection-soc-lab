@@ -5,7 +5,7 @@ Use this add-on to bring AWS telemetry into Splunk.
 ## Install
 
 1. Download from [Splunkbase](https://splunkbase.splunk.com/app/1876/).
-2. In Splunk, go to **Apps -> Manage Apps -> Install app from file**.
+2. In Splunk, go to **Apps > Manage Apps > Install app from file**.
 3. Upload the `.tgz` package and restart Splunk.
 
 ## Next step

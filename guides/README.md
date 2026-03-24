@@ -1,6 +1,6 @@
 # Guides
 
-Use these guides if you want a clear, click-by-click walkthrough.
+Use these guides for a clear, step-by-step walkthrough.
 
 | Step | Link | What you do |
 |------|------|-------------|

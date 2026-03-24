@@ -1,4 +1,4 @@
-# 🛡️ AWS Threat Detection SOC Lab
+# AWS Threat Detection SOC Lab
 This project is a practical AWS threat detection lab built for hands-on SOC learning. The infrastructure is automated with Terraform, so you can spend your time on what matters most: adversary simulation, investigation practice, and detection improvement in Splunk.
 
 > Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
@@ -33,7 +33,7 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 - [What this project delivers](#what-this-project-delivers)
 - [Components](#components)
 - [Prerequisites](#prerequisites)
-- [Quick start](#quick-start-end-to-end)
+- [Quick Start](#quick-start)
 - [Verify data in Splunk](#verify-data-in-splunk)
 - [Cleanup](#cleanup)
 - [Repo layout](#repo-layout)
@@ -52,7 +52,7 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 | Splunk (Docker) | Local Splunk Enterprise for searching and dashboards | `soc/` |
 | Index Setup | Creates `aws_cloudtrail`, `aws_config`, `aws_vpcflow` | `scripts/setup_splunk.py` |
 | Splunk Add-on for AWS | Ingests log objects from S3 (or SQS-based ingestion) | Splunk UI |
-| AWS logging Infra | CloudTrail, Config, VPC Flow Logs -> S3 | `infra/` |
+| AWS logging Infra | CloudTrail, Config, VPC Flow Logs to S3 | `infra/` |
 | Stratus Red Team | Generates “known-bad” activity to validate detections | `attacks/` |
 
 ## Prerequisites
@@ -62,7 +62,7 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 - An AWS account with permissions to create lab resources
 - `aws configure` set up on your machine
 
-## Quick start (end-to-end)
+## Quick Start
 Follow the more detailed walkthrough in [`guides/step-by-step.md`](guides/step-by-step.md). This is the fast version.
 
 ### 1) Start Splunk (Docker)
@@ -90,11 +90,11 @@ Save the bucket names and the Splunk IAM key + secret printed by the script.
 
 ### 5) Configure ingestion in Splunk Add-on (SQS-based S3)
 In the Splunk Add-on for AWS:
-- Go to **Configuration -> AWS Account** and paste the Splunk IAM access key and secret from Step 4.
+- Go to **Configuration > AWS Account** and paste the Splunk IAM access key and secret from Step 4.
 - Go to **Inputs** and create three **SQS-based S3** inputs:
-  - CloudTrail queue -> index `aws_cloudtrail`
-  - Config queue -> index `aws_config`
-  - VPC Flow Logs queue -> index `aws_vpcflow`
+  - CloudTrail queue to index `aws_cloudtrail`
+  - Config queue to index `aws_config`
+  - VPC Flow Logs queue to index `aws_vpcflow`
 
 Terraform prints the SQS queue URLs and ARNs after `./build.sh` (see `infra/outputs_sqs.tf`).
 
