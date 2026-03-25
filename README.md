@@ -2,7 +2,7 @@
 
 Imagine a cloud SOC lab where building the infrastructure is part of the skill, but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud. 
 
-Terraform codifies the infrastructure, so you build it once and spin it up or down as needed.
+``Terraform codifies the infrastructure, so you build it once and spin it up or down as needed.``
 
 I originally built this lab to strengthen my understanding of cloud-based threats and security monitoring while preparing for the AWS Solutions Architect certification, and I’m sharing it to help others on a similar journey.
 
