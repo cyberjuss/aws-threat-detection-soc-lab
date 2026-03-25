@@ -112,7 +112,7 @@ index=aws_cloudtrail eventName=CreateAccessKey
 cd infra && ./destroy.sh
 ```
 
-Use your build credentials, not the Stratus profile. The script empties S3 buckets before destroying — S3 won't delete non-empty buckets. You'll be asked whether to keep the IAM users if you plan to rebuild later.
+Use your designated build credentials instead of the Stratus profile. During the teardown process, the script automatically empties all S3 buckets, as AWS does not permit deletion of non-empty buckets. You will also be prompted to decide whether to retain IAM users if you intend to rebuild the environment later.
 
 ---
 
