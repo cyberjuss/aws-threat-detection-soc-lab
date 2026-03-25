@@ -1,4 +1,4 @@
-##  AWS Threat Detection SOC Lab
+#  AWS Threat Detection SOC Lab
 
 Imagine a cloud SOC lab where building the infrastructure is part of the skill, but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud. 
 
