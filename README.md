@@ -38,7 +38,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 ## 🚀 Quick start
 
-For a detailed walkthrough, see [`guides/step-by-step.md`](guides/step-by-step.md), with additional context in the Medium blog.
+> For a detailed walkthrough, see [`guides/step-by-step.md`](guides/step-by-step.md), with additional context in the Medium blog.
 
 **Prerequisites:** 
 - Docker Desktop
