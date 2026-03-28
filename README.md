@@ -1,5 +1,9 @@
 #  AWS Threat Detection SOC Lab
 
+[![Terraform validate](https://github.com/cyberjuss/aws-threat-detection-soc-lab/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/cyberjuss/aws-threat-detection-soc-lab/actions/workflows/terraform.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.0-844FBA?logo=terraform&logoColor=white)](infra/versions.tf)
+
 Imagine a cloud SOC lab where building the infrastructure is part of the skill, but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud. 
 
 > Terraform codifies the infrastructure, so you build it once and spin it up or down as needed.
@@ -40,12 +44,9 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 > For a detailed walkthrough, see [`guides/step-by-step.md`](guides/step-by-step.md), with additional context in the Medium blog.
 
-**Prerequisites:** 
-- Docker Desktop
-- Python 3.10+
-- AWS account
-- `aws configure` 
-- Bash terminal
+> **When idle:** tear down the AWS stack so you are not paying for logging and storage you are not using. See [Teardown](#teardown) (`./destroy.sh`).
+
+**Prerequisites:** Docker Desktop, Python 3.10+, Bash, AWS account, AWS CLI (`aws configure`). Terraform/`build.sh` need an identity with enough rights to create the stack — see [`guides/step-by-step.md`](guides/step-by-step.md#requirements) (and [`infra/README.md`](infra/README.md) for Terraform-only notes).
 
 ### 1. Start Splunk
 ```bash
@@ -90,6 +91,8 @@ stratus detonate <technique-id> --cleanup
 
 ### 🔍 Detection Examples
 
+Starter SPL you can paste into Splunk Search:
+
 ```spl
 # Failed console logins
 index=aws_cloudtrail eventName=ConsoleLogin errorMessage=*
@@ -103,6 +106,8 @@ index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress
 # Access key created
 index=aws_cloudtrail eventName=CreateAccessKey
 ```
+
+**More detections:** add saved searches, macros, or `.spl` snippets under [`detections/`](detections/) — contributions are welcome. See [`detections/README.md`](detections/README.md) for how to organize files and open a pull request.
 
 ---
 
@@ -125,7 +130,7 @@ soc/          Splunk Docker Compose
 scripts/      setup_splunk.py, knowledge_check.py
 attacks/      configure-stratus.sh
 guides/       step-by-step.md
-detections/   add your own detections here
+detections/   optional SPL / saved-search snippets (see detections/README.md)
 ```
 
 ---

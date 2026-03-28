@@ -5,7 +5,7 @@
 # Runs from the directory that contains versions.tf (this script may live in
 # repo root or under infra/; INFRA_DIR is resolved automatically).
 #
-# Flow: check CLI tools → load optional .env.soc-lab-admin → resolve AWS
+# Flow: check CLI tools + splunk-sdk (Python) → load optional .env.soc-lab-admin → resolve AWS
 # credentials (env, profile soc-lab-admin, or prompt) → terraform init →
 # optionally import pre-existing IAM users/keys → plan → apply → print outputs
 # → write .env.splunk and .env.stratus at repo root for Splunk / Stratus.
@@ -89,6 +89,21 @@ ensure_cmd() {
 ensure_cmd aws "AWS CLI" "https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html" "Amazon.AWSCLI"
 ensure_cmd terraform "Terraform" "https://developer.hashicorp.com/terraform/install" "Hashicorp.Terraform"
 ensure_cmd python "Python 3" "https://www.python.org/downloads/"
+
+# Same Python used for scripts/setup_splunk.py — fail early if indexes step was skipped or pip missed.
+ensure_splunk_sdk() {
+  if python -c "import splunklib.client" 2>/dev/null; then
+    return 0
+  fi
+  echo "[build] Missing Python package splunk-sdk (needed for scripts/setup_splunk.py and lab indexes)."
+  echo "Install: pip install splunk-sdk"
+  echo "If you intentionally have no Splunk tooling on this machine, set SOC_LAB_SKIP_SPLUNK_SDK_CHECK=1 and re-run."
+  exit 1
+}
+
+if [[ -z "${SOC_LAB_SKIP_SPLUNK_SDK_CHECK:-}" ]]; then
+  ensure_splunk_sdk
+fi
 
 REPO_ROOT="$(cd "$INFRA_DIR/.." && pwd)"
 ADMIN_ENV_FILE="$REPO_ROOT/.env.soc-lab-admin"

@@ -8,9 +8,17 @@ Skip steps you’ve already done. For more depth, see the project’s Medium blo
 
 - Docker Desktop
 - Python 3.10+
-- AWS account
+- AWS account (prefer a **dedicated sandbox / lab account**)
 - Bash shell
-- AWS CLI configured (`aws configure`) to avoid repeated credential prompts
+- AWS CLI installed; run **`aws configure`** so credentials exist locally (same chain Terraform uses — see [`infra/README.md`](../infra/README.md))
+
+### AWS credentials and IAM (before you run `./build.sh`)
+
+`aws configure` only stores keys; it does **not** grant rights. The identity you use for **`build.sh`** must be allowed to **create and manage** everything Terraform applies: IAM users and policies, S3 buckets and policies, SQS, SNS, CloudTrail, AWS Config (recorder, roles, delivery), VPC Flow Logs on the default VPC, and related resources.
+
+A **narrow IAM user** often fails mid-run with `AccessDenied` errors. For a personal lab, the straightforward path is an IAM user (or role) with **`AdministratorAccess`** in a **non-production account**. If your org gives you a restricted role, map Terraform’s failed API calls to policy updates — there is no minimal fixed policy list in this repo.
+
+Confirm the identity works: **`aws sts get-caller-identity`** must succeed before `cd infra && ./build.sh`.
 
 ---
 

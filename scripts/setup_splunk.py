@@ -3,17 +3,19 @@
 # Usage: python setup_splunk.py
 
 import getpass
-import importlib
+import sys
 
 try:
-    client = importlib.import_module("splunklib.client")
-except ImportError as e:
-    raise ImportError(
+    import splunklib.client as client
+except ImportError:
+    print(
         "The Splunk Python SDK is required but not installed.\n"
         "Install it with:\n"
         "    pip install splunk-sdk\n"
-        "and then re-run this script."
-    ) from e
+        "and then re-run this script.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 # Local Docker Compose defaults (see soc/docker-compose.yml).
 SPLUNK_HOST = "localhost"

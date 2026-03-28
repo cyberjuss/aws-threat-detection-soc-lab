@@ -2,12 +2,20 @@
 
 This folder creates and tears down the AWS side of the lab.
 
+## AWS credentials and permissions
+
+`build.sh` / Terraform use the **same credential chain** as the AWS CLI (`aws sts get-caller-identity` must work). They do **not** prompt for keys.
+
+The caller needs **broad permissions** to create IAM, S3, SQS, SNS, CloudTrail, Config, VPC Flow Logs, and related resources. Restricted users often see **`AccessDenied`** during apply. For a sandbox lab, **`AdministratorAccess`** on an IAM user in a test account is the usual approach. Match **region** to `aws configure` (or `AWS_REGION`) and to what you want in `variables.tf` / `aws_region`.
+
 ## Recommended way
 
 - Build: `./build.sh`
 - Destroy: `./destroy.sh`
 
 These scripts are the easiest path because they include prompts, checks, and safer defaults.
+
+`build.sh` verifies the **`splunk-sdk`** Python package is importable (same interpreter as `python`), because `scripts/setup_splunk.py` needs it for indexes. Install with `pip install splunk-sdk` before running the build if you have not already. For a machine that only runs Terraform and never Splunk setup, you can set **`SOC_LAB_SKIP_SPLUNK_SDK_CHECK=1`**.
 
 ## What gets created
 
