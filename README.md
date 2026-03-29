@@ -43,7 +43,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 > For a detailed walkthrough with troubleshooting tips, see [`guides/step-by-step.md`](guides/step-by-step.md).
 
-**Cost note:** AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
+> Cost note: AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
 
 **Prerequisites**
 
@@ -74,8 +74,6 @@ python ./scripts/setup_splunk.py
 
 ### 4. Build AWS infrastructure
 
-CLI and credentials: [Step 4 in the walkthrough](guides/step-by-step.md#step-4--build-the-aws-infrastructure).
-
 ```bash
 cd infra && ./build.sh
 # Save the SQS queue URLs and IAM credentials from the output
@@ -98,7 +96,7 @@ cd infra && ./build.sh
 index=aws_cloudtrail earliest=-1h
 ```
 
-Repeat for `aws_config` and `aws_vpcflow`. Allow a few minutes for the first delivery.
+> Repeat for `aws_config` and `aws_vpcflow`. Allow a few minutes for the first delivery.
 
 ---
 
@@ -107,12 +105,13 @@ Repeat for `aws_config` and `aws_vpcflow`. Allow a few minutes for the first del
 ```bash
 cd attacks
 source ./configure-stratus.sh
-
+```
+```
 stratus list --platform aws
 stratus detonate <technique-id> --cleanup
 ```
 
-Every time you open a new terminal to run Stratus, run `source ./configure-stratus.sh` first. That loads the Stratus AWS profile into your current shell, and it does not persist when you start another session. Use this profile only for Stratus.
+> Every time you open a new terminal to run Stratus, run `source ./configure-stratus.sh` first. That loads the Stratus AWS profile into your current shell, and it does not persist when you start another session. Use this profile only for Stratus.
 
 ---
 
@@ -121,18 +120,21 @@ Every time you open a new terminal to run Stratus, run `source ./configure-strat
 ```spl
 # Failed console logins
 index=aws_cloudtrail eventName=ConsoleLogin errorMessage=*
-
+```
+```
 # IAM user created
 index=aws_cloudtrail eventName=CreateUser
-
+```
+```
 # Security group opened
 index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress
-
+```
+```
 # Access key created
 index=aws_cloudtrail eventName=CreateAccessKey
 ```
 
-Add SPL or saved-search examples under [`detections/`](detections/). Pull requests welcome.
+> Add SPL or saved-search examples under [`detections/`](detections/). Pull requests welcome.
 
 ---
 
@@ -142,7 +144,7 @@ Add SPL or saved-search examples under [`detections/`](detections/). Pull reques
 cd infra && ./destroy.sh
 ```
 
-The script empties S3 first, then prompts whether to keep the Splunk/Stratus IAM users for faster rebuilds.
+> The script empties S3 first, then prompts whether to keep the Splunk/Stratus IAM users for faster rebuilds.
 
 ---
 
