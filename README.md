@@ -47,9 +47,9 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 **Prerequisites**
 
-- Docker Desktop
-- Python 3.10+
-- Bash (Git Bash on Windows)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Python 3.10+](https://www.python.org/downloads/)
+- [Bash (Git Bash on Windows)](https://git-scm.com/download/win)
 - AWS Account (AdministratorAccess)
 
 ### 1. Start Splunk
@@ -113,7 +113,7 @@ stratus list --platform aws
 stratus detonate <technique-id> --cleanup
 ```
 
-Each new shell: `source ./configure-stratus.sh` (the profile doesn’t persist). Use it only for Stratus — not for `./destroy.sh`.
+Every time you open a new terminal to run Stratus, run `source ./configure-stratus.sh` first. That loads the Stratus AWS profile into your current shell, and it does not persist when you start another session. Use this profile only for Stratus.
 
 ---
 
@@ -133,7 +133,7 @@ index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress
 index=aws_cloudtrail eventName=CreateAccessKey
 ```
 
-Share SPL or saved searches in [`detections/`](detections/) — PRs welcome.
+Add SPL or saved-search examples under [`detections/`](detections/). Pull requests welcome.
 
 ---
 
@@ -143,7 +143,7 @@ Share SPL or saved searches in [`detections/`](detections/) — PRs welcome.
 cd infra && ./destroy.sh
 ```
 
-Use **build** credentials (not Stratus). The script empties S3 first, then prompts whether to keep the Splunk/Stratus IAM users for faster rebuilds.
+The script empties S3 first, then prompts whether to keep the Splunk/Stratus IAM users for faster rebuilds.
 
 ---
 
