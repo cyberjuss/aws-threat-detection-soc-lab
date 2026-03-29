@@ -1,6 +1,5 @@
 #  AWS Threat Detection SOC Lab
 
-[![Terraform validate](https://github.com/cyberjuss/aws-threat-detection-soc-lab/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/cyberjuss/aws-threat-detection-soc-lab/actions/workflows/terraform.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.0-844FBA?logo=terraform&logoColor=white)](infra/versions.tf)
 
@@ -44,9 +43,16 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 > For a detailed walkthrough, see [`guides/step-by-step.md`](guides/step-by-step.md), with additional context in the Medium blog.
 
-> **When idle:** tear down the AWS stack so you are not paying for logging and storage you are not using. See [Teardown](#teardown) (`./destroy.sh`).
+> **Idle lab** — use [Teardown](#teardown) (`./destroy.sh`) to avoid ongoing AWS charges.
 
-**Prerequisites:** Docker Desktop, Python 3.10+, Bash, AWS account, AWS CLI (`aws configure`). Terraform/`build.sh` need an identity with enough rights to create the stack — see [`guides/step-by-step.md`](guides/step-by-step.md#requirements) (and [`infra/README.md`](infra/README.md) for Terraform-only notes).
+**Prerequisites**
+
+- Docker Desktop
+- Python 3.10+
+- Bash
+- AWS account
+- AWS CLI (`aws configure`)
+- IAM identity with enough rights for Terraform / `build.sh` to create the stack
 
 ### 1. Start Splunk
 ```bash
@@ -63,11 +69,11 @@ python ./scripts/setup_splunk.py
 cd infra && ./build.sh
 # Save the bucket names, SQS queue URLs, and IAM credentials from the output
 ```
-### 4. Install Splunk Add-on for AWS from Splunkbase, then configure:
-```
-#    Configuration → AWS Account  →  paste soc-lab-splunk-addon keys
-#    Inputs → SQS-based S3        →  create inputs for each queue + index
-```
+### 4. Splunk Add-on for AWS
+
+- **Configuration → AWS Account** — paste `soc-lab-splunk-addon` keys
+- **Inputs → SQS-based S3** — one input per queue, mapped to its index
+
 ### 5. Verify data
 ```
 #    index=aws_cloudtrail earliest=-1h
@@ -107,7 +113,7 @@ index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress
 index=aws_cloudtrail eventName=CreateAccessKey
 ```
 
-**More detections:** add saved searches, macros, or `.spl` snippets under [`detections/`](detections/) — contributions are welcome. See [`detections/README.md`](detections/README.md) for how to organize files and open a pull request.
+**More:** share SPL or saved searches in [`detections/`](detections/) — see [`detections/README.md`](detections/README.md) (PRs welcome).
 
 ---
 
@@ -125,7 +131,7 @@ You will also be prompted to decide whether to retain IAM users if you intend to
 ### 📁 Repo layout
 
 ```
-infra/        Terraform + build.sh + destroy.sh
+infra/        Terraform, build.sh, destroy.sh
 soc/          Splunk Docker Compose
 scripts/      setup_splunk.py, knowledge_check.py
 attacks/      configure-stratus.sh
