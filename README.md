@@ -37,13 +37,13 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 | Splunk | Containerized local search and detection platform (SIEM) |
 | IAM users | One for Splunk ingestion (read-only), one for Stratus adversary simulations |
 
+> Cost note: AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
+
 ---
 
 ### 🚀 Quick start
 
 > For a detailed walkthrough with troubleshooting tips, see [`guides/step-by-step.md`](guides/step-by-step.md).
-
-> Cost note: AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
 
 **Prerequisites**
 
