@@ -10,7 +10,7 @@
 #           all of AWS).
 #
 # Optional remote state: uncomment `backend "s3"` after you create the bucket
-# (and optional DynamoDB table for locking). Required for shared/CI workflows;
+# (and optional DynamoDB table for locking). Useful for shared or team state;
 # local state is fine for a solo lab machine.
 # -----------------------------------------------------------------------------
 

@@ -52,7 +52,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 - Bash
 - AWS account
 - AWS CLI (`aws configure`)
-- IAM identity with enough rights for Terraform / `build.sh` to create the stack
+- IAM permissions for the Terraform stack (`build.sh`)
 
 ### 1. Start Splunk
 ```bash
