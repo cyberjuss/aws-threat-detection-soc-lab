@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.0-844FBA?logo=terraform&logoColor=white)](infra/versions.tf)
 
-Imagine a cloud SOC lab where building the infrastructure is part of the skill, but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud. 
+Imagine a cloud SOC lab where building the infrastructure is part of the skill, but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud.
 
 > Terraform codifies the infrastructure, so you build it once and spin it up or down as needed.
 
@@ -41,43 +41,72 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 ### 🚀 Quick start
 
-> For a detailed walkthrough, see [`guides/step-by-step.md`](guides/step-by-step.md), with additional context in the Medium blog.
+> For a detailed walkthrough with troubleshooting tips, see [`guides/step-by-step.md`](guides/step-by-step.md).
 
-> **Idle lab** — use [Teardown](#teardown) (`./destroy.sh`) to avoid ongoing AWS charges.
+**Cost note:** AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
 
 **Prerequisites**
 
 - Docker Desktop
 - Python 3.10+
-- Bash
-- AWS account
-- AWS CLI (`aws configure`)
-- IAM permissions for the Terraform stack (`build.sh`)
+- Bash (Git Bash on Windows)
+- AWS account (sandbox or personal — not production)
+- AWS CLI configured (`aws configure`)
+- IAM credentials with sufficient permissions — see **IAM permissions** below
+
+### ⚠️ IAM permissions
+
+`aws configure` stores credentials but does **not** grant permissions. The identity used for `./build.sh` must be able to create IAM users, S3 buckets, SQS queues, CloudTrail, AWS Config, and VPC Flow Logs. For a personal lab, attach **AdministratorAccess** in a non-production account. A restricted role will fail mid-apply with **AccessDenied**.
+
+Verify before building:
+
+```bash
+aws sts get-caller-identity
+```
 
 ### 1. Start Splunk
+
 ```bash
 cd soc && docker compose up -d
-# Open https://localhost:8000
+# Open https://localhost:8000  |  user: admin  |  pass: ChangeMe123!
 ```
+
 ### 2. Create indexes
+
 ```bash
 pip install splunk-sdk
 python ./scripts/setup_splunk.py
 ```
-### 3. Build AWS infrastructure
+
+### 3. Install the Splunk Add-on for AWS
+
+Download from [Splunkbase](https://splunkbase.splunk.com/app/1876/), then in Splunk go to **Apps → Manage Apps → Install app from file**. Upload the `.tgz` and restart Splunk when prompted. **Inputs** are configured in step 5.
+
+### 4. Build AWS infrastructure
+
 ```bash
 cd infra && ./build.sh
-# Save the bucket names, SQS queue URLs, and IAM credentials from the output
+# Save the SQS queue URLs and IAM credentials from the output
 ```
-### 4. Splunk Add-on for AWS
 
-- **Configuration → AWS Account** — paste `soc-lab-splunk-addon` keys
-- **Inputs → SQS-based S3** — one input per queue, mapped to its index
+### 5. Configure ingestion
 
-### 5. Verify data
+- **Configuration → AWS Account** — paste the `soc-lab-splunk-addon` keys from step 4
+- **Inputs → SQS-based S3** — create one input per queue, mapped to its index:
+
+| Queue | Index |
+|-------|--------|
+| CloudTrail SQS URL | `aws_cloudtrail` |
+| Config SQS URL | `aws_config` |
+| VPC Flow SQS URL | `aws_vpcflow` |
+
+### 6. Verify data
+
+```spl
+index=aws_cloudtrail earliest=-1h
 ```
-#    index=aws_cloudtrail earliest=-1h
-```
+
+Repeat for `aws_config` and `aws_vpcflow`. Allow a few minutes for the first delivery.
 
 ---
 
@@ -91,13 +120,11 @@ stratus list --platform aws
 stratus detonate <technique-id> --cleanup
 ```
 
-> The purpose of running source `./configure-stratus.sh` each time you open a new terminal is to ensure your AWS profile and region are properly set for that session, since these configurations are not persisted automatically.
+Re-run `source ./configure-stratus.sh` in each new terminal — the AWS profile is not persisted across sessions. Use Stratus credentials for simulations only, not for `./destroy.sh`.
 
 ---
 
 ### 🔍 Detection Examples
-
-Starter SPL you can paste into Splunk Search:
 
 ```spl
 # Failed console logins
@@ -113,7 +140,7 @@ index=aws_cloudtrail eventName=AuthorizeSecurityGroupIngress
 index=aws_cloudtrail eventName=CreateAccessKey
 ```
 
-**More:** share SPL or saved searches in [`detections/`](detections/) — see [`detections/README.md`](detections/README.md) (PRs welcome).
+Share SPL or saved searches in [`detections/`](detections/) — PRs welcome.
 
 ---
 
@@ -123,8 +150,7 @@ index=aws_cloudtrail eventName=CreateAccessKey
 cd infra && ./destroy.sh
 ```
 
-> Use your designated build credentials instead of the Stratus profile. During the teardown process, the script automatically empties all S3 buckets, as AWS does not permit deletion of non-empty buckets. 
-You will also be prompted to decide whether to retain IAM users if you intend to rebuild the environment later.
+Use your **build** credentials, not the Stratus profile. The script empties S3 buckets before destroy and prompts whether to retain IAM users if you plan to rebuild later.
 
 ---
 
@@ -136,7 +162,7 @@ soc/          Splunk Docker Compose
 scripts/      setup_splunk.py, knowledge_check.py
 attacks/      configure-stratus.sh
 guides/       step-by-step.md
-detections/   optional SPL / saved-search snippets (see detections/README.md)
+detections/   SPL and saved-search snippets (PRs welcome)
 ```
 
 ---
