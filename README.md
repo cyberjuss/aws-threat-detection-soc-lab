@@ -15,7 +15,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 
 ### 🗺️ Architecture Overview
 
-![Architecture: AWS telemetry to S3 to SQS to Splunk](https://github.com/user-attachments/assets/c65afbe7-7817-4510-8017-30ffeb521446)
+![Architecture: AWS telemetry to S3 to SQS to Splunk](diagrams/aws-threat-detection-soc-lab-architecture.png)
 
 1. AWS telemetry sources deliver log objects to S3.
 2. S3 publishes `ObjectCreated` notifications to SQS queues.

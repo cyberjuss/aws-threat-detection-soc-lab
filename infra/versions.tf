@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # Run `terraform init` before `plan` / `apply` so providers are installed.
 #
-# - aws:    All AWS resources in this stack (S3, IAM, CloudTrail, Config, etc.).
+# - aws:    All AWS resources in this stack (S3, IAM, CloudTrail, SQS, EC2, etc.).
 #           Version ~> 5.0 allows 5.x bugfix releases, not 6.x.
 # - random: Generates a hex suffix for globally unique S3 bucket names when
 #           var.s3_bucket_suffix is null (S3 bucket names must be unique across

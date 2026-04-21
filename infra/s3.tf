@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # One bucket per source so permissions, lifecycle, and Splunk indexes stay
 # isolated. Bucket policies for service write access live in cloudtrail.tf,
-# config.tf, and vpc_flow_logs.tf respectively.
+# and vpc_flow_logs.tf respectively.
 #
 # force_destroy allows `terraform destroy` to delete non-empty buckets (the
 # destroy script still empties versioned objects first).
@@ -66,53 +66,6 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
 
 resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-# --- AWS Config bucket (if enable_config) -------------------------------------
-resource "aws_s3_bucket" "config" {
-  count  = var.enable_config ? 1 : 0
-  bucket = "${var.project_name}-config-${local.suffix}"
-
-  force_destroy = true
-
-  tags = {
-    Name = "${var.project_name}-config"
-  }
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "config" {
-  count  = var.enable_config ? 1 : 0
-  bucket = aws_s3_bucket.config[0].id
-
-  rule {
-    id     = "expire-old-config-snapshots"
-    status = "Enabled"
-
-    filter {}
-
-    expiration {
-      days = 365
-    }
-  }
-}
-
-resource "aws_s3_bucket_versioning" "config" {
-  count  = var.enable_config ? 1 : 0
-  bucket = aws_s3_bucket.config[0].id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "config" {
-  count  = var.enable_config ? 1 : 0
-  bucket = aws_s3_bucket.config[0].id
 
   block_public_acls       = true
   block_public_policy     = true
